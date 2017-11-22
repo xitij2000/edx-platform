@@ -154,7 +154,7 @@ endorser_org = endorser_position.get('organization_name') or corporate_endorseme
   </div>
 </%block>
 
-<div id="program-details-page" class="container">  
+<div id="program-details-page" class="container">
   <div class="row program-info">
     <div class="col col-12 col-lg-7">
       <div class="section">
@@ -341,7 +341,7 @@ endorser_org = endorser_position.get('organization_name') or corporate_endorseme
         <h2>${_('Instructors')}</h2>
       </div>
       % for instructor in instructors:
-        <div class="col-6 col-sm-3 instructor">
+        <div class="col-12 col-sm-6 col-md-4 instructor">
           <div>
             <img alt="" src="${instructor['image']}"/>
           </div>
@@ -349,6 +349,16 @@ endorser_org = endorser_position.get('organization_name') or corporate_endorseme
           % if instructor.get('position'):
             <div class="instructor-position">${instructor['position'].get('position')}</div>
             <div class="instructor-org">${instructor['position'].get('organization_name')}</div>
+          % endif
+          % if instructor.get('bio'):
+          <div>
+            <div class="instructor-bio">
+              ${HTML(instructor.get('bio'))}
+            </div>
+            <button class="btn btn-primary">
+                ${_('View Bio')}
+            </button>
+          </div>
           % endif
         </div>
       % endfor
