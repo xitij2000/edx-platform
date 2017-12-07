@@ -337,6 +337,13 @@ endorser_org = endorser_position.get('organization_name') or corporate_endorseme
   % if instructors:
     <hr class="thick_rule">
     <div id="instructors" class="row">
+      ${static.renderReact(
+        component="Modalx",
+        id="container-id",
+        props={
+          'title': 'bar'
+        }
+      )}
       <div class="col-12">
         <h2>${_('Instructors')}</h2>
       </div>
