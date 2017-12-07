@@ -130,28 +130,29 @@ endorser_org = endorser_position.get('organization_name') or corporate_endorseme
         </div>
       </div>
     </div>
-    <div class="row quick-nav">
+    <div class="quick-nav">
       <div class="container">
-        <ul class="nav nav-fill col-lg-12">
-          % if courses:
-          <li class="nav-item">
-            <a class="nav-link" href="#courses">${_('View Courses')}</a>
-          </li>
-          % endif
-          % if instructors:
-          <li class="nav-item">
-            <a class="nav-link" href="#instructors">${_('Meet the Instructors')}</a>
-          </li>
-          % endif
-          % if faqs:
-          <li class="nav-item">
-            <a class="nav-link" href="#faqs">${_('Frequenty Asked Questions')}</a>
-          </li>
-          % endif
-        </ul>
+        <div class="row">
+            <ul class="nav nav-fill col-lg-12">
+                % if courses:
+                <li class="nav-item">
+                  <a class="nav-link" href="#courses">${_('View Courses')}</a>
+                </li>
+                % endif
+                % if instructors:
+                <li class="nav-item">
+                  <a class="nav-link" href="#instructors">${_('Meet the Instructors')}</a>
+                </li>
+                % endif
+                % if faqs:
+                <li class="nav-item">
+                  <a class="nav-link" href="#faqs">${_('Frequenty Asked Questions')}</a>
+                </li>
+                % endif
+              </ul>
+        </div>
       </div>
     </div>
-  </div>
 </%block>
 
 <div id="program-details-page" class="container">
