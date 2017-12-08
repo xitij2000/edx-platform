@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from '@edx/paragon/src/Modal/index';
 import PropTypes from 'prop-types';
 
-class ModalWrapper extends React.Component {
+export class InstructorBioModal extends React.Component {
     constructor(props) {
         super(props);
 
@@ -30,33 +30,18 @@ class ModalWrapper extends React.Component {
             body={this.props.body}
             onClose={this.resetModalWrapperState}
             />
-            <Button
-            onClick={this.openModal}
-            label="Click me to open a modal!"
-            buttonType="light"
-            inputRef={(input) => { this.button = input; }}
-            />
+            <button className="btn btn-primary" onClick={this.openModal} ref={(button)=>{this.button=button}}>
+                {gettext('View Bio')}
+            </button>
         </div>
         );
     }
 }
-ModalWrapper.propTypes = {
+InstructorBioModal.propTypes = {
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
     body: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
 };
   
-ModalWrapper.defaultProps = {
+InstructorBioModal.defaultProps = {
     open: false,
 };
-
-
-export class Modalx extends React.Component{
-    render(){
-        return (
-            <ModalWrapper
-                title="Matt's Modal"
-                body="This is Matt's Bio"
-            />
-        )
-    }
-}

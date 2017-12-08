@@ -338,17 +338,13 @@ endorser_org = endorser_position.get('organization_name') or corporate_endorseme
   % if instructors:
     <hr class="thick_rule">
     <div id="instructors" class="row">
-      ${static.renderReact(
-        component="Modalx",
-        id="container-id",
-        props={
-          'title': 'bar'
-        }
-      )}
       <div class="col-12">
         <h2>${_('Instructors')}</h2>
       </div>
       % for instructor in instructors:
+        <%
+          instructor_hash = hash(instructor['name'])
+        %>
         <div class="col-12 col-sm-6 col-md-4 instructor">
           <div>
             <img alt="" src="${instructor['image']}"/>
@@ -363,9 +359,14 @@ endorser_org = endorser_position.get('organization_name') or corporate_endorseme
             <div class="instructor-bio">
               ${HTML(instructor.get('bio'))}
             </div>
-            <button class="btn btn-primary">
-                ${_('View Bio')}
-            </button>
+            ${static.renderReact(
+              component="InstructorBioModal",
+              id="container-id-" + str(instructor_hash),
+              props={
+                'title': instructor['name'],
+                'body': HTML(instructor.get('bio'))
+              }
+            )}
           </div>
           % endif
         </div>
