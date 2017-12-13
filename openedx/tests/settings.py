@@ -23,7 +23,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'openedx.core.djangoapps.video_config',
-    'openedx.core.djangoapps.video_pipeline',
     'edxval',
 )
 
