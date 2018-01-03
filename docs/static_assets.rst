@@ -127,11 +127,12 @@ full list:
 
 ::
 
-  # Webpack post-processed assets
+  # Webpack bundles/post-processed assets
   /webpack/css
           /fonts
           /images
           /js
+          /vendor ?
 
   # Django apps that are in the edx-platform repo
   /course_bookmarks
@@ -152,8 +153,42 @@ full list:
   # XBlocks still collect their assets into a common space (/xmodule goes away)
   /xblock
 
+Disorganized Thoughts...
+************************
+
 Webpack would be responsible for all Sass compilation in edx-platform. It would
 also be responsible for the optimization/minification of JavaScript assets, but
 those optimized assets would only appear under the ``/webpack`` directory. Third
 party assets that Webpack is not aware of would be copied over as-is, without
 minification or bundling.
+
+One goal would be to remove django-pipeline as a dependency altogether.
+
+So breaking things out by responsibility:
+
+Django/Python
+  * Custom finders and collectstatic stay for app compatiblity -- these don't
+    require any "compile" step to serve in dev mode.
+  * No optimization of assets.
+
+Webpack
+  * All bundling and optimization.
+  * Apps in edx-platform opt-in to use this.
+  * So `course_bookmarks` app has its source resources 
+
+
+Theme handling is muddled. The fact that themes can override server-side
+templates means that Python has to be aware of them. At the same time, we want
+to shift over Sass compilation as a whole to Webpack, meaning that at least some
+knowledge about where they are and how to compile them has to exist there. Also,
+there are JS assets in some themes that provide additional functionality, and it
+would be a performance degradation if those assets were no longer optimized.
+
+Crazy bridging ideas:
+
+* Create a Webpack Loader that understands Python/Django packaging.
+
+Maybe that's not completely crazy. If the Webpack loader is minimal and calls
+out to a Python extractor of some sort...
+
+
