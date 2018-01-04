@@ -172,10 +172,10 @@ Django/Python
   * No optimization of assets.
 
 Webpack
-  * All bundling and optimization.
+  * All Sass, JS, bundling and optimization -- anything that has to compile to
+    display.
   * Apps in edx-platform opt-in to use this.
   * So `course_bookmarks` app has its source resources 
-
 
 Theme handling is muddled. The fact that themes can override server-side
 templates means that Python has to be aware of them. At the same time, we want
@@ -184,11 +184,21 @@ knowledge about where they are and how to compile them has to exist there. Also,
 there are JS assets in some themes that provide additional functionality, and it
 would be a performance degradation if those assets were no longer optimized.
 
-Crazy bridging ideas:
+What I do NOT want to happen:
 
-* Create a Webpack Loader that understands Python/Django packaging.
+* Significant end user performance degradation.
+* Having an *additional* system in the asset pipeline (e.g. keeping
+  django-pipeline around while having additional systems).
 
-Maybe that's not completely crazy. If the Webpack loader is minimal and calls
-out to a Python extractor of some sort...
+Asset Groups
+------------
 
+These are logical groupings of static assets. There should be uniformity and
+no duplication within a group, but we allow duplication between groups to better
+facilitate independent deployment and isolation.
 
+Groups:
+
+* XBlock/XModule
+* LMS/Studio apps in edx-platform
+* 
