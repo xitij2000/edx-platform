@@ -14,7 +14,7 @@ Big Open Questions (TODO)
 
 * Pluggable third party apps and Webpack packaging.
 * Keep the Django i18n mechanism?
-* Stance on HTTP/2 and bundling granularity.
+* Stance on HTTP/2 and bundling granularity -- lean towards more granular.
 * Optimizing theme assets.
 * Tests
 
@@ -130,7 +130,6 @@ full list:
   # Webpack bundles/post-processed assets
   /webpack/css
           /fonts
-          /images
           /js
           /vendor ?
 
@@ -155,6 +154,9 @@ full list:
 
 Disorganized Thoughts...
 ************************
+
+Rule of thumb: If it requires compilation before it's ready to serve, then it's
+Webpack.
 
 Webpack would be responsible for all Sass compilation in edx-platform. It would
 also be responsible for the optimization/minification of JavaScript assets, but
