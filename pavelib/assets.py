@@ -792,14 +792,23 @@ def get_webpack_config(settings):
     in a while...
     """
     current_dir = os.path.dirname(os.path.realpath(__file__))
+
     # Default config_root is the parent directory of edx-platform
     default_config_root = os.path.realpath(os.path.join(current_dir, "..", ".."))
     config_root = os.environ.get('CONFIG_ROOT', default_config_root)
     lms_config_path = os.path.join(config_root, "lms.env.json")
-    with open(lms_config_path) as lms_config_file:
-        lms_config = json.load(lms_config_file)
 
-    static_root_lms = lms_config['STATIC_ROOT_BASE']
+    if os.path.exists(lms_config_path):
+        with open(lms_config_path) as lms_config_file:
+            lms_config = json.load(lms_config_file)
+        static_root_lms = lms_config['STATIC_ROOT_BASE']
+    else:
+        static_root_lms = os.path.realpath(os.path.join(current_dir), "..", "staticfiles")
+        print(
+            "No lms.env.json config found for {} -- defaulting to {} for STATIC_ROOT"
+            .format(settings, static_root_lms)
+        )
+
     static_root_cms = os.path.join(static_root_lms, 'studio')
     if settings == Env.DEVSTACK_SETTINGS:
         config_path = 'webpack.dev.config.js'
