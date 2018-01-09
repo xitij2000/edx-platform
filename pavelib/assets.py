@@ -803,7 +803,7 @@ def get_webpack_config(settings):
             lms_config = json.load(lms_config_file)
         static_root_lms = lms_config['STATIC_ROOT_BASE']
     else:
-        static_root_lms = os.path.realpath(os.path.join(current_dir), "..", "staticfiles")
+        static_root_lms = os.path.realpath(os.path.join(current_dir, "..", "staticfiles"))
         print(
             "No lms.env.json config found for {} -- defaulting to {} for STATIC_ROOT"
             .format(settings, static_root_lms)
