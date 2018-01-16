@@ -78,10 +78,9 @@ class CourseEndingTest(TestCase):
             certificates_display_behavior='end',
             id=CourseLocator(org="x", course="y", run="z"),
         )
-        course_mode = 'honor'
 
         self.assertEqual(
-            _cert_info(user, course, None, course_mode),
+            _cert_info(user, course, None),
             {
                 'status': 'processing',
                 'show_survey_button': False,
@@ -91,7 +90,7 @@ class CourseEndingTest(TestCase):
 
         cert_status = {'status': 'unavailable'}
         self.assertEqual(
-            _cert_info(user, course, cert_status, course_mode),
+            _cert_info(user, course, cert_status),
             {
                 'status': 'processing',
                 'show_survey_button': False,
@@ -105,7 +104,7 @@ class CourseEndingTest(TestCase):
         with patch('lms.djangoapps.grades.course_grade_factory.CourseGradeFactory.read') as patch_persisted_grade:
             patch_persisted_grade.return_value = Mock(percent=1.0)
             self.assertEqual(
-                _cert_info(user, course, cert_status, course_mode),
+                _cert_info(user, course, cert_status),
                 {
                     'status': 'generating',
                     'show_survey_button': True,
@@ -119,7 +118,7 @@ class CourseEndingTest(TestCase):
 
         cert_status = {'status': 'generating', 'grade': '0.67', 'mode': 'honor'}
         self.assertEqual(
-            _cert_info(user, course, cert_status, course_mode),
+            _cert_info(user, course, cert_status),
             {
                 'status': 'generating',
                 'show_survey_button': True,
@@ -140,7 +139,7 @@ class CourseEndingTest(TestCase):
         }
 
         self.assertEqual(
-            _cert_info(user, course, cert_status, course_mode),
+            _cert_info(user, course, cert_status),
             {
                 'status': 'downloadable',
                 'download_url': download_url,
@@ -159,7 +158,7 @@ class CourseEndingTest(TestCase):
             'mode': 'honor'
         }
         self.assertEqual(
-            _cert_info(user, course, cert_status, course_mode),
+            _cert_info(user, course, cert_status),
             {
                 'status': 'notpassing',
                 'show_survey_button': True,
@@ -178,7 +177,7 @@ class CourseEndingTest(TestCase):
             'download_url': download_url, 'mode': 'honor'
         }
         self.assertEqual(
-            _cert_info(user, course2, cert_status, course_mode),
+            _cert_info(user, course2, cert_status),
             {
                 'status': 'notpassing',
                 'show_survey_button': False,
@@ -193,7 +192,7 @@ class CourseEndingTest(TestCase):
         course2.certificates_display_behavior = 'early_no_info'
         cert_status = {'status': 'unavailable'}
         self.assertEqual(
-            _cert_info(user, course2, cert_status, course_mode),
+            _cert_info(user, course2, cert_status),
             {
                 'status': 'processing',
                 'show_survey_button': False,
@@ -207,7 +206,7 @@ class CourseEndingTest(TestCase):
             'mode': 'honor'
         }
         self.assertEqual(
-            _cert_info(user, course2, cert_status, course_mode),
+            _cert_info(user, course2, cert_status),
             {
                 'status': 'processing',
                 'show_survey_button': False,
@@ -239,7 +238,6 @@ class CourseEndingTest(TestCase):
             certificates_display_behavior='end',
             id=CourseLocator(org="x", course="y", run="z"),
         )
-        course_mode = 'honor'
 
         if cert_grade is not None:
             cert_status = {'status': 'generating', 'grade': unicode(cert_grade), 'mode': 'honor'}
@@ -249,7 +247,7 @@ class CourseEndingTest(TestCase):
         with patch('lms.djangoapps.grades.course_grade_factory.CourseGradeFactory.read') as patch_persisted_grade:
             patch_persisted_grade.return_value = Mock(percent=persisted_grade)
             self.assertEqual(
-                _cert_info(user, course, cert_status, course_mode),
+                _cert_info(user, course, cert_status),
                 {
                     'status': 'generating',
                     'show_survey_button': True,
@@ -274,13 +272,12 @@ class CourseEndingTest(TestCase):
             certificates_display_behavior='end',
             id=CourseLocator(org="x", course="y", run="z"),
         )
-        course_mode = 'honor'
         cert_status = {'status': 'generating', 'mode': 'honor'}
 
         with patch('lms.djangoapps.grades.course_grade_factory.CourseGradeFactory.read') as patch_persisted_grade:
             patch_persisted_grade.return_value = None
             self.assertEqual(
-                _cert_info(user, course, cert_status, course_mode),
+                _cert_info(user, course, cert_status),
                 {
                     'status': 'processing',
                     'show_survey_button': False,

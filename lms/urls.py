@@ -46,6 +46,7 @@ from ratelimitbackend import admin
 from static_template_view import views as static_template_view_views
 from staticbook import views as staticbook_views
 from student import views as student_views
+from student import views_login as student_login_views
 from student_account import views as student_account_views
 from track import views as track_views
 from util import views as util_views
@@ -160,7 +161,7 @@ if settings.FEATURES['ENABLE_COMBINED_LOGIN_REGISTRATION']:
 else:
     # Serve the old views
     urlpatterns += [
-        url(r'^login$', student_views.signin_user, name='signin_user'),
+        url(r'^login$', student_login_views.signin_user, name='signin_user'),
         url(r'^register$', student_views.register_user, name='register_user'),
     ]
 
@@ -962,7 +963,7 @@ if settings.FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
         url(r'api/third_party_auth/', include('third_party_auth.api.urls')),
         # NOTE: The following login_oauth_token endpoint is DEPRECATED.
         # Please use the exchange_access_token endpoint instead.
-        url(r'^login_oauth_token/(?P<backend>[^/]+)/$', student_views.login_oauth_token),
+        url(r'^login_oauth_token/(?P<backend>[^/]+)/$', student_login_views.login_oauth_token),
     ]
 
 # Enterprise

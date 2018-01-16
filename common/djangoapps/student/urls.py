@@ -7,17 +7,18 @@ from django.conf.urls import url
 from django.contrib.auth.views import password_reset_complete
 
 import student.views
+import student.views_login
 
 urlpatterns = [
-    url(r'^logout$', student.views.LogoutView.as_view(), name='logout'),
+    url(r'^logout$', student.views_login.LogoutView.as_view(), name='logout'),
 
     # TODO: standardize login
 
     # login endpoint used by cms.
-    url(r'^login_post$', student.views.login_user, name='login_post'),
+    url(r'^login_post$', student.views_login.login_user, name='login_post'),
     # login endpoints used by lms.
-    url(r'^login_ajax$', student.views.login_user, name="login"),
-    url(r'^login_ajax/(?P<error>[^/]*)$', student.views.login_user),
+    url(r'^login_ajax$', student.views_login.login_user, name="login"),
+    url(r'^login_ajax/(?P<error>[^/]*)$', student.views_login.login_user),
 
     url(r'^email_confirm/(?P<key>[^/]*)$', student.views.confirm_email_change, name='confirm_email_change'),
 
@@ -46,7 +47,7 @@ urlpatterns = [
 # enable automatic login
 if settings.FEATURES.get('AUTOMATIC_AUTH_FOR_TESTING'):
     urlpatterns += [
-        url(r'^auto_auth$', student.views.auto_auth),
+        url(r'^auto_auth$', student.views_login.auto_auth),
     ]
 
 # password reset django views (see above for password reset student.views)

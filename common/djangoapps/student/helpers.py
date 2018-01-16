@@ -1,24 +1,30 @@
-"""Helpers for the student app. """
+"""
+Helpers for the student app.
+"""
 import logging
 import mimetypes
 import urllib
 import urlparse
 from datetime import datetime
 
+import django
 from django.conf import settings
 from django.core.urlresolvers import NoReverseMatch, reverse
+from django.contrib.auth import authenticate, load_backend, login, logout
 from django.utils import http
 from oauth2_provider.models import AccessToken as dot_access_token
 from oauth2_provider.models import RefreshToken as dot_refresh_token
 from provider.oauth2.models import AccessToken as dop_access_token
 from provider.oauth2.models import RefreshToken as dop_refresh_token
 from pytz import UTC
+from six import iteritems
 
 import third_party_auth
 from course_modes.models import CourseMode
 from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification, VerificationDeadline
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.theming.helpers import get_themes
+from student.models import UserAttribute
 
 # Enumeration of per-course verification statuses
 # we display on the student dashboard.
@@ -186,7 +192,7 @@ def check_verify_status_by_course(user, course_enrollments):
                 }
 
     if recent_verification_datetime:
-        for key, value in status_by_course.iteritems():  # pylint: disable=unused-variable
+        for key, value in iteritems(status_by_course):  # pylint: disable=unused-variable
             status_by_course[key]['verification_good_until'] = recent_verification_datetime.strftime("%m/%d/%Y")
 
     return status_by_course
@@ -348,3 +354,63 @@ def destroy_oauth_tokens(user):
     dop_refresh_token.objects.filter(user=user.id).delete()
     dot_access_token.objects.filter(user=user.id).delete()
     dot_refresh_token.objects.filter(user=user.id).delete()
+
+
+def generate_activation_email_context(user, registration):
+    """
+    Constructs a dictionary for use in activation email contexts
+
+    Arguments:
+        user (User): Currently logged-in user
+        registration (Registration): Registration object for the currently logged-in user
+    """
+    return {
+        'name': user.profile.name,
+        'key': registration.activation_key,
+        'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
+        'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
+        'support_url': configuration_helpers.get_value('SUPPORT_SITE_LINK', settings.SUPPORT_SITE_LINK),
+        'support_email': configuration_helpers.get_value('CONTACT_EMAIL', settings.CONTACT_EMAIL),
+    }
+
+
+def create_or_set_user_attribute_created_on_site(user, site):
+    """
+    Create or Set UserAttribute indicating the microsite site the user account was created on.
+    User maybe created on 'courses.edx.org', or a white-label site
+    """
+    if site:
+        UserAttribute.set_user_attribute(user, 'created_on_site', site.domain)
+
+
+# TODO: Remove Django 1.11 upgrade shim
+# SHIM: Compensate for behavior change of default authentication backend in 1.10
+if django.VERSION < (1, 10):
+    NEW_USER_AUTH_BACKEND = 'django.contrib.auth.backends.ModelBackend'
+else:
+    # We want to allow inactive users to log in only when their account is first created
+    NEW_USER_AUTH_BACKEND = 'django.contrib.auth.backends.AllowAllUsersModelBackend'
+
+# Disable this warning because it doesn't make sense to completely refactor tests to appease Pylint
+# pylint: disable=logging-format-interpolation
+
+
+def authenticate_new_user(request, username, password):
+    """
+    Immediately after a user creates an account, we log them in. They are only
+    logged in until they close the browser. They can't log in again until they click
+    the activation link from the email.
+    """
+    backend = load_backend(NEW_USER_AUTH_BACKEND)
+    user = backend.authenticate(request=request, username=username, password=password)
+    user.backend = NEW_USER_AUTH_BACKEND
+    return user
+
+
+class AccountValidationError(Exception):
+    """
+    Used in account creation views to raise exceptions with details about specific invalid fields
+    """
+    def __init__(self, message, field):
+        super(AccountValidationError, self).__init__(message)
+        self.field = field

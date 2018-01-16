@@ -63,7 +63,7 @@ class TestStudentDashboardUnenrollments(SharedModuleStoreTestCase):
         self.cert_status = 'processing'
         self.client.login(username=self.user.username, password=PASSWORD)
 
-    def mock_cert(self, _user, _course_overview, _course_mode):
+    def mock_cert(self, _user, _course_overview):
         """ Return a preset certificate status. """
         return {
             'status': self.cert_status,

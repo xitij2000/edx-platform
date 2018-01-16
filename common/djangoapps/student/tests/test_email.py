@@ -22,10 +22,9 @@ from student.views import (
     SETTING_CHANGE_INITIATED,
     confirm_email_change,
     do_email_change_request,
-    generate_activation_email_context,
-    reactivation_email_for_user,
     validate_new_email
 )
+from student.views_login import generate_activation_email_context, send_reactivation_email_for_user
 from third_party_auth.views import inactive_user_view
 from util.request import safe_get_host
 from util.testing import EventTestMixin
@@ -146,7 +145,7 @@ class ActivationEmailTests(TestCase):
             )
 
 
-@patch('student.views.render_to_string', Mock(side_effect=mock_render_to_string, autospec=True))
+@patch('student.views_login.render_to_string', Mock(side_effect=mock_render_to_string, autospec=True))
 @patch('django.contrib.auth.models.User.email_user')
 class ReactivationEmailTests(EmailTestMixin, TestCase):
     """Test sending a reactivation email to a user"""
@@ -162,7 +161,7 @@ class ReactivationEmailTests(EmailTestMixin, TestCase):
         Send the reactivation email to the specified user,
         and return the response as json data.
         """
-        return json.loads(reactivation_email_for_user(user).content)
+        return json.loads(send_reactivation_email_for_user(user).content)
 
     def assertReactivateEmailSent(self, email_user):
         """Assert that the correct reactivation email has been sent"""

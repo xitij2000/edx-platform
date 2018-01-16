@@ -79,7 +79,7 @@ class LoginSessionView(APIView):
         """
         # For the initial implementation, shim the existing login view
         # from the student Django app.
-        from student.views import login_user
+        from student.views_login import login_user
         return shim_student_view(login_user, check_logged_in=True)(request)
 
     @method_decorator(sensitive_post_parameters("password"))

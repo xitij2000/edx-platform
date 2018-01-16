@@ -24,6 +24,7 @@ from openedx.core.djangoapps.site_configuration.tests.factories import SiteFacto
 from openedx.tests.util import expected_redirect_url
 from student import models as student_models
 from student import views as student_views
+from student import views_login as student_login_views
 from student.tests.factories import UserFactory
 from student_account.views import account_settings_context
 
@@ -355,7 +356,7 @@ class IntegrationTest(testutil.TestCase, test.TestCase):
             strategy.request.POST['password'] = 'bad_' + password if success is False else password
 
         self.assert_pipeline_running(strategy.request)
-        payload = json.loads(student_views.login_user(strategy.request).content)
+        payload = json.loads(student_login_views.login_user(strategy.request).content)
 
         if success is None:
             # Request malformed -- just one of email/password given.
@@ -602,8 +603,8 @@ class IntegrationTest(testutil.TestCase, test.TestCase):
             pipeline.get_login_url(self.provider.provider_id, pipeline.AUTH_ENTRY_LOGIN))
         actions.do_complete(request.backend, social_views._do_login)  # pylint: disable=protected-access
 
-        student_views.signin_user(strategy.request)
-        student_views.login_user(strategy.request)
+        student_login_views.signin_user(strategy.request)
+        student_login_views.login_user(strategy.request)
         actions.do_complete(request.backend, social_views._do_login)  # pylint: disable=protected-access
 
         # First we expect that we're in the unlinked state, and that there
@@ -656,8 +657,8 @@ class IntegrationTest(testutil.TestCase, test.TestCase):
         actions.do_complete(request.backend, social_views._do_login)  # pylint: disable=protected-access
 
         with self._patch_edxmako_current_request(strategy.request):
-            student_views.signin_user(strategy.request)
-            student_views.login_user(strategy.request)
+            student_login_views.signin_user(strategy.request)
+            student_login_views.login_user(strategy.request)
             actions.do_complete(request.backend, social_views._do_login, user=user)  # pylint: disable=protected-access
 
         # First we expect that we're in the linked state, with a backend entry.
@@ -721,8 +722,8 @@ class IntegrationTest(testutil.TestCase, test.TestCase):
         actions.do_complete(request.backend, social_views._do_login)  # pylint: disable=protected-access
 
         with self._patch_edxmako_current_request(strategy.request):
-            student_views.signin_user(strategy.request)
-            student_views.login_user(strategy.request)
+            student_login_views.signin_user(strategy.request)
+            student_login_views.login_user(strategy.request)
             actions.do_complete(request.backend, social_views._do_login, user=user)  # pylint: disable=protected-access
 
         # Monkey-patch storage for messaging; pylint: disable=protected-access
@@ -764,12 +765,12 @@ class IntegrationTest(testutil.TestCase, test.TestCase):
         # At this point we know the pipeline has resumed correctly. Next we
         # fire off the view that displays the login form and posts it via JS.
         with self._patch_edxmako_current_request(strategy.request):
-            self.assert_login_response_in_pipeline_looks_correct(student_views.signin_user(strategy.request))
+            self.assert_login_response_in_pipeline_looks_correct(student_login_views.signin_user(strategy.request))
 
         # Next, we invoke the view that handles the POST, and expect it
         # redirects to /auth/complete. In the browser ajax handlers will
         # redirect the user to the dashboard; we invoke it manually here.
-        self.assert_json_success_response_looks_correct(student_views.login_user(strategy.request))
+        self.assert_json_success_response_looks_correct(student_login_views.login_user(strategy.request))
 
         # We should be redirected back to the complete page, setting
         # the "logged in" cookie for the marketing site.
@@ -795,7 +796,7 @@ class IntegrationTest(testutil.TestCase, test.TestCase):
         user.save()
 
         with self._patch_edxmako_current_request(strategy.request):
-            self.assert_json_failure_response_is_inactive_account(student_views.login_user(strategy.request))
+            self.assert_json_failure_response_is_inactive_account(student_login_views.login_user(strategy.request))
 
     def test_signin_fails_if_no_account_associated(self):
         _, strategy = self.get_request_and_strategy(
@@ -804,7 +805,7 @@ class IntegrationTest(testutil.TestCase, test.TestCase):
         self.create_user_models_for_existing_account(
             strategy, 'user@example.com', 'password', self.get_username(), skip_social_auth=True)
 
-        self.assert_json_failure_response_is_missing_social_auth(student_views.login_user(strategy.request))
+        self.assert_json_failure_response_is_missing_social_auth(student_login_views.login_user(strategy.request))
 
     def test_first_party_auth_trumps_third_party_auth_but_is_invalid_when_only_email_in_request(self):
         self.assert_first_party_auth_trumps_third_party_auth(email='user@example.com')
