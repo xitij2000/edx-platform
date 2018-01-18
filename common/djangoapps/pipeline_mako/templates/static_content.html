@@ -122,7 +122,16 @@ source, template_path = Loader(engine).load_template_source(path)
     ${HTML(render_bundle(entry))}
     % if body:
       <script type="text/javascript">
-        ${body | n, decode.utf8}
+        // Use a timeout of 0 to run this asynchronously (to maintain compatibility with require_module below
+        // and to let this static:webpack directive appear before any tags we might modify).
+        setTimeout(function() {
+          if (${entry | n, decode.utf8} === undefined && window.default !== undefined) {
+            // Webpack bundles built from es2015 code may install their default export
+            // into the window as 'default', so let's make it friendlier to work with.
+            var ${entry | n, decode.utf8} = window.default;
+          }
+          ${body | n, decode.utf8}
+        });
       </script>
     % endif
 </%def>
