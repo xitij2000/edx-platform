@@ -32,8 +32,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2018-01-17 13:50+0000\n"
-"PO-Revision-Date: 2018-01-17 13:50:33.506466\n"
+"POT-Creation-Date: 2018-01-18 21:28+0000\n"
+"PO-Revision-Date: 2018-01-18 21:28:46.333793\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -14241,6 +14241,11 @@ msgstr "Örgänïzätïön: Ⱡ'σяєм ιρѕυм ∂σłσя ѕι#"
 msgid "Course Number:"
 msgstr "Çöürsé Nümßér: Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт#"
 
+#: cms/templates/index.html
+#: lms/templates/instructor/instructor_dashboard_2/course_info.html
+msgid "Course Run:"
+msgstr "Çöürsé Rün: Ⱡ'σяєм ιρѕυм ∂σłσя #"
+
 #: cms/templates/index.html lms/templates/sysadmin_dashboard.html
 #: lms/templates/sysadmin_dashboard_gitlogs.html
 #: lms/templates/courseware/courses.html
@@ -20711,10 +20716,6 @@ msgid "Course Name:"
 msgstr "Çöürsé Nämé: Ⱡ'σяєм ιρѕυм ∂σłσя ѕ#"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
-msgid "Course Display Name:"
-msgstr "Çöürsé Dïspläý Nämé: Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, #"
-
-#: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Course Start Date:"
 msgstr "Çöürsé Stärt Däté: Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт#"
 
@@ -26781,10 +26782,6 @@ msgstr "För éxämplé, MÌTx Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмє
 #: cms/templates/index.html
 msgid "Courses Being Processed"
 msgstr "Çöürsés Béïng Pröçésséd Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
-
-#: cms/templates/index.html
-msgid "Course Run:"
-msgstr "Çöürsé Rün: Ⱡ'σяєм ιρѕυм ∂σłσя #"
 
 #: cms/templates/index.html
 msgid "This course run is currently being created."
