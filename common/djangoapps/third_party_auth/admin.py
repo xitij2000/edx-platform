@@ -109,7 +109,7 @@ class SAMLConfigurationAdmin(KeyedConfigurationModelAdmin):
     def get_list_display(self, request):
         """ Shorten the public/private keys in the change view """
         return (
-            'site', 'change_date', 'changed_by', 'enabled', 'entity_id',
+            'site', 'slug', 'change_date', 'changed_by', 'enabled', 'entity_id',
             'org_info_str', 'key_summary', 'edit_link',
         )
 

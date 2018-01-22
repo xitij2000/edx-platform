@@ -118,7 +118,7 @@ class Registry(object):
                 if provider.backend_name == backend_name and provider.enabled_for_current_site:
                     yield provider
         elif backend_name in _PSA_SAML_BACKENDS and SAMLConfiguration.is_enabled(
-                Site.objects.get_current(get_current_request())):
+                Site.objects.get_current(get_current_request()), 'default'):
             idp_names = SAMLProviderConfig.key_values('idp_slug', flat=True)
             for idp_name in idp_names:
                 provider = SAMLProviderConfig.current(idp_name)
