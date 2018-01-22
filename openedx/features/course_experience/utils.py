@@ -45,6 +45,7 @@ def get_course_outline_block_tree(request, course_id):
         """
         Recursively marks the branch to the last accessed block.
         """
+        # TODO: EDUCATOR-2088
         block_key = block.serializer.instance
         student_module_dict = get_student_module_as_dict(user, course_key, block_key)
         last_accessed_child_position = student_module_dict.get('position')
