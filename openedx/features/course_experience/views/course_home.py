@@ -85,6 +85,50 @@ class CourseHomeFragmentView(EdxFragmentView):
             """
             Gets the deepest block marked as 'last_accessed'.
             """
+            from lms.djangoapps.completion.services import CompletionService
+            from opaque_keys.edx.keys import CourseKey, UsageKey
+            from opaque_keys import InvalidKeyError
+            # from xmodule.modulestore.split_mongo import BlockKey
+            course_key = CourseKey.from_string(course_id)
+            completion_service_instance = CompletionService(
+                user=request.user,
+                course_key=course_key
+            )
+
+            print '***'
+            if not block.get('children'):
+                completion_data = completion_service_instance.get_completions([UsageKey.from_string(block['id'])])
+                print 1
+                print completion_data
+            else:
+                for c in block['children']:
+                    if not c.get('children'):
+                        completion_data = completion_service_instance.get_completions([UsageKey.from_string(c['id'])])
+                        print 2
+                        print completion_data
+                    else:
+                        for g in c['children']:
+                            completion_data = completion_service_instance.get_completions([UsageKey.from_string(g['id'])])
+                            print 3
+                            print completion_data
+            # blocks = {block['id']for block in block}
+            # print block['block_id']
+            # try:
+            #     buk = UsageKey.from_string(block['block_id'])
+            # except InvalidKeyError:
+            #     pass
+            # try:
+            # if buk is not None:
+            #     completion_data = completion_service_instance.get_completions([buk])
+            #     print '!!!'
+            #     print completion_data
+            # except AssertionError:
+            #     pass
+
+            # # completion_block = BlockKey.from_usage_key(UsageKey.from_string(block['id']))
+            # completion_block = UsageKey.from_string(block['children'][0]['children'][0]['id'])
+            # completion_data = completion_service_instance.get_completions([block])
+
             if not block['last_accessed']:
                 return None
             if not block.get('children'):
