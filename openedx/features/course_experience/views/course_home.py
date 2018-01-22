@@ -8,13 +8,14 @@ from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
-from opaque_keys.edx.keys import CourseKey
+from opaque_keys.edx.keys import CourseKey, UsageKey
 from web_fragments.fragment import Fragment
 
 from course_modes.models import get_cosmetic_verified_display_price
 from courseware.access import has_access
 from courseware.courses import can_self_enroll_in_course, get_course_info_section, get_course_with_access
 from lms.djangoapps.commerce.utils import EcommerceService
+from lms.djangoapps.completion.services import CompletionService
 from lms.djangoapps.course_goals.api import (
     get_course_goal,
     get_course_goal_options,
@@ -36,6 +37,7 @@ from .course_outline import CourseOutlineFragmentView
 from .course_sock import CourseSockFragmentView
 from .latest_update import LatestUpdateFragmentView
 from .welcome_message import WelcomeMessageFragmentView
+
 
 EMPTY_HANDOUTS_HTML = u'<ol></ol>'
 
@@ -83,56 +85,25 @@ class CourseHomeFragmentView(EdxFragmentView):
 
         def get_last_accessed_block(block):
             """
-            Gets the deepest block marked as 'last_accessed'.
+            Gets the deepest block marked as 'last_accessed', or with a completion value > 0.
+
             """
-            from lms.djangoapps.completion.services import CompletionService
-            from opaque_keys.edx.keys import CourseKey, UsageKey
-            from opaque_keys import InvalidKeyError
-            # from xmodule.modulestore.split_mongo import BlockKey
-            course_key = CourseKey.from_string(course_id)
-            completion_service_instance = CompletionService(
-                user=request.user,
-                course_key=course_key
-            )
-
-            print '***'
-            if not block.get('children'):
-                completion_data = completion_service_instance.get_completions([UsageKey.from_string(block['id'])])
-                print 1
-                print completion_data
-            else:
-                for c in block['children']:
-                    if not c.get('children'):
-                        completion_data = completion_service_instance.get_completions([UsageKey.from_string(c['id'])])
-                        print 2
-                        print completion_data
-                    else:
-                        for g in c['children']:
-                            completion_data = completion_service_instance.get_completions([UsageKey.from_string(g['id'])])
-                            print 3
-                            print completion_data
-            # blocks = {block['id']for block in block}
-            # print block['block_id']
-            # try:
-            #     buk = UsageKey.from_string(block['block_id'])
-            # except InvalidKeyError:
-            #     pass
-            # try:
-            # if buk is not None:
-            #     completion_data = completion_service_instance.get_completions([buk])
-            #     print '!!!'
-            #     print completion_data
-            # except AssertionError:
-            #     pass
-
-            # # completion_block = BlockKey.from_usage_key(UsageKey.from_string(block['id']))
-            # completion_block = UsageKey.from_string(block['children'][0]['children'][0]['id'])
-            # completion_data = completion_service_instance.get_completions([block])
-
             if not block['last_accessed']:
                 return None
             if not block.get('children'):
-                return block
+                course_key = CourseKey.from_string(course_id)
+                completion_service_instance = CompletionService(
+                    user=request.user,
+                    course_key=course_key
+                )
+                if completion_service_instance.completion_tracking_enabled():
+                    block_usage_key = UsageKey.from_string(block['id'])
+                    completion_data = completion_service_instance.get_completions([block_usage_key])
+                    if completion_data > 0.0:
+                        return block
+                else:
+                    return block
+
             for child in block['children']:
                 last_accessed_block = get_last_accessed_block(child)
                 if last_accessed_block:
